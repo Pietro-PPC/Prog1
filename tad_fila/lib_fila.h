@@ -3,6 +3,7 @@
 typedef struct t_aviao{
 	int id;
 	int autonomia;
+	int espera;
 } t_aviao;
 
 typedef struct t_nodo{

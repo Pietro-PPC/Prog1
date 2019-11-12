@@ -51,6 +51,7 @@ int enfileira(int id, int t, tipo_fila *F)
 	
 	novo->chave.id = id;
 	novo->chave.autonomia = t;
+	novo->chave.espera = 0;
 	novo->prox = F->fim;
 	novo->prev = F->fim->prev;
 
