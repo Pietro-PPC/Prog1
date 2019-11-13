@@ -15,7 +15,13 @@
 #define ALIEN_3_1  " nmn dbMdb_/-\\_"
 #define ALIEN_3_2  " nmn dbMdb |-| "
 #define BARREIRA   " AMMMA AMMMMMAMM   MM"
+#define BLOCOS     "AM"
 #define CANHAO     " /^\\ MMMMM"
+
+#define ALTURA_ALIENS 3
+#define ALTURA_CANHAO 2
+#define ALTURA_BARREIRA 3
+#define ALTURA_BLOCO 1
 
 #define MAX_TAM_NAVE 28
 #define TAM_BARREIRA 22
@@ -95,7 +101,7 @@ int insere_aliens( t_lista *l_tela )
 /* AUTOMATIZAR DETECÇÃO DE LETRAS? */
 int insere_barreira(int lin, int col, t_lista *l_tela)
 {
-	int i, ncol, l_atual, col_atual;
+	int i, ncol, l_atual, c_atual;
 
 	ncol = strlen(BARREIRA) / 3;
 	for (i = 0; i < strlen(BARREIRA); i++)
@@ -119,7 +125,7 @@ int insere_barreiras(t_lista *l_tela)
 {
 	int i;
 	for (i = 0; i < 4; i++)
-		if (!insere_barreira(31, (15 + 21*i) l_tela))
+		if (!insere_barreira(31, (15 + 21*i), l_tela))
 			return 0;
 
 	return 1;
@@ -276,49 +282,89 @@ void imprime_borda()
 
 void atribui_desenho(char *desenho, int tipo, int forma)
 {
-	if (forma == 0)
-		if (tipo == 0)
-			desenho = NAVE_MAE_1;
-		else if (tipo == 1)
-			desenho = ALIEN_1_1;
-		else if (tipo == 2)
-			desenho = ALIEN_2_1;
-		else if (tipo == 3)
-			desenho = ALIEN_3_1;
+	char str_bloco[2];
+
+	if (tipo <= 3)
+		if (forma == 0)
+		{
+			if (tipo == 0)
+				desenho = NAVE_MAE; MUDAR!
+			else if (tipo == 1)
+				desenho = ALIEN_1_1;
+			else if (tipo == 2)
+				desenho = ALIEN_2_1;
+			else if (tipo == 3)
+				desenho = ALIEN_3_1;
+		}
+		else
+		{
+			if (tipo == 0)
+				desenho = NAVE_MAE_2;
+			else if (tipo == 1)
+				desenho = ALIEN_1_2;
+			else if (tipo == 2)
+				desenho = ALIEN_2_2;
+			else if (tipo == 3)	
+				desenho = ALIEN_3_2;
+		}
 	
-	else
-		if (tipo == 0)
-			desenho = NAVE_MAE_2;
-		else if (tipo == 1)
-			desenho = ALIEN_1_2;
-		else if (tipo == 2)
-			desenho = ALIEN_2_2;
-		else if (tipo == 3)	
-			desenho = ALIEN_3_2;
+	else if (tipo == 4)
+	{
+		str_bloco[0] = BLOCOS[0];
+		str_bloco[1] = '\0';
+		desenho = str_bloco;
+	}
+	else if (tipo == 5)
+	{
+		str_bloco[0] = BLOCOS[1];
+		str_bloco[1] = '\0';
+		desenho = str_bloco;
+	}
+	else if (tipo == 6)
+		desenho = CANHAO;
 }
 
-void imprime_alien(int lin, int col, int tipo, int forma)
+int altura_desenho(int tipo)
 {
-	int i, l_atual, c_atual, ncol;
+	if (tipo <= 3)
+		return ALT_ALIENS;
+	if (tipo <= 5)
+		return ALT_BLOCO;
+	if (tipo == 6)
+		return ALT_CANHAO;
+	return 0;
+}
+
+void imprime_objeto(int tipo, int lin, int col, int forma)
+{
+	int i, l_atual, c_atual, alt, larg;
 	char *desenho;
 	
 	atribui_desenho(desenho, tipo, forma);
-
-	ncol = srlen(desenho) / 3 ;
+	
+	alt = altura_desenho(tipo);
+	larg = srlen(desenho) / alt;
 	for (i = 0; i < strlen(desenho); i++)
 	{
-		l_atual = lin + (i / ncol);
-		c_atual = col + (i % ncol);
+		l_atual = lin + (i / larg);
+		c_atual = col + (i % larg);
 		move(l_atual, c_atual);
 		addch(desenho[i]);
 	}
 }
 
-void imprime_barreira(int lin, int col, int num_bar, entidades *tabuleiro)
+/*
+void imprime_barreira(int lin, int col, int tipo)
 {
-	int i, tam;
-	bloco atual;
-		
+	char c;
+
+	if (tipo == 4)
+		c = 'A';
+	else
+		c = 'M';
+
+	move(lin, col);
+		addch(c);
 }
 
 void imprime_canhao(int lin, int col, entidades *tabuleiro)
@@ -328,14 +374,13 @@ void imprime_canhao(int lin, int col, entidades *tabuleiro)
 	
 	can = &(tabuleiro->jogador);
 	for (i = 0; i < can->alt; i++)
-		for (j = 0; j < can->larg; j++)
-		{
-			move(lin+i, col+j);
-			addch(can->forma[can->larg*i + j]);
-		}
+	{
+		move(lin+i, col+j);
+		addch(can->forma[can->larg*i + j]);
+	}
 }
-
-void imprime_tela(t_lista *l_tela, entidades *tabuleiro)
+*/
+void imprime_tela(t_lista *l_tela, int forma)
 {
 	int tipo, lin, col, vel, estado, cont_bar = 0, i;
 
@@ -346,19 +391,13 @@ void imprime_tela(t_lista *l_tela, entidades *tabuleiro)
 	for (i = 0; i < l_tela->tamanho; i++)
 	{
 		consulta_item_atual(&tipo, &lin, &col, &vel, &estado, l_tela);
-
-		if (tipo <= 3)
-			imprime_alien(lin, col, tipo, tabuleiro);
-		else if (tipo == 4)
-			imprime_barreira(lin, col, tipo);
-		else if (tipo == 5)
-			imprime_canhao(lin, col, tabuleiro);
-
+		imprime_objeto(tipo, lin, col, forma);
 		incrementa_atual(l_tela);
 	}
 	refresh();
 }
 
+/*
 void move_aliens(t_lista *l_tela)
 {
 	int maiorcol, menorcol;
@@ -373,7 +412,7 @@ void move_aliens(t_lista *l_tela)
 		incrementa_atual(l_tela);
 	}
 }
-
+*/
 int main()
 {
 
@@ -382,7 +421,6 @@ int main()
 	int iter = 1;
 
 	inicializa_lista_tela( &l_tela );
-	define_entidades(&tabuleiro);
 	
 	if (!inicializa_tela())
 	{
@@ -392,11 +430,11 @@ int main()
 
 	while(1)
 	{
-		imprime_tela(&l_tela, &tabuleiro);
+		imprime_tela(&l_tela, iter % 2);
 		
-		if (iter % 100 == 0)
+/*		if (iter % 100 == 0)
 			move_aliens(t_lista *l_tela);
-		
+*/		
 		iter++;
 		usleep(INTERVALO);
 	}
