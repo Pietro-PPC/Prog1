@@ -59,9 +59,6 @@ typedef struct canhao
 typedef struct entidades
 {
 	int forma;
-	nave_alien naves[4];
-	barreira barreiras[4];
-	canhao jogador;
 } entidades;
 
 /* Funcoes de inicializacao da lista de elementos */
@@ -95,11 +92,34 @@ int insere_aliens( t_lista *l_tela )
 	return 1;
 }
 
+/* AUTOMATIZAR DETECÇÃO DE LETRAS? */
+int insere_barreira(int lin, int col, t_lista *l_tela)
+{
+	int i, ncol, l_atual, col_atual;
+
+	ncol = strlen(BARREIRA) / 3;
+	for (i = 0; i < strlen(BARREIRA); i++)
+	{
+		l_atual = lin + (i / ncol);
+		c_atual = col + (i % ncol);
+		if (BARREIRA[i] == 'A')
+		{
+			if (!insere_fim_lista(4, l_atual, c_atual, 0, 1, l_tela))
+				return 0;
+		}
+		else if (BARREIRA[i] == 'M')
+		{
+			if (!insere_fim_lista(5, l_atual, c_atual, 0, 1, l_tela))
+				return 0;
+		}
+	}
+}
+
 int insere_barreiras(t_lista *l_tela)
 {
 	int i;
 	for (i = 0; i < 4; i++)
-		if (!insere_fim_lista(4, 31, (15 + 21*i), 0, 1, l_tela))
+		if (!insere_barreira(31, (15 + 21*i) l_tela))
 			return 0;
 
 	return 1;
@@ -116,10 +136,10 @@ int inicializa_lista_tela( t_lista *l_tela )
 {
 	if (!inicializa_lista (l_tela)) return 0;
 	
-	if (!insere_nave_mae  (l_tela)) return 0;
-	if (!insere_aliens    (l_tela)) return 0;
+	if (!insere_nave_mae (l_tela)) return 0;
+	if (!insere_aliens (l_tela)) return 0;
 	if (!insere_barreiras (l_tela)) return 0;
-	if (!insere_canhao    (l_tela)) return 0;
+	if (!insere_canhao (l_tela)) return 0;
 
 	return 1;
 }
@@ -143,9 +163,9 @@ int inicializa_tela()
 
 	return 1;
 }
-
+/* ------------------------------------------------- */
 /* funcoes de definicao de entidades */
-
+/* PODE REMOVER 
 void define_nave_mae(entidades *tabuleiro)
 {
 	tabuleiro->naves[0].alt = 3;
@@ -231,6 +251,7 @@ void define_entidades(entidades *tabuleiro)
 	define_barreiras(tabuleiro);
 	define_canhao(tabuleiro);
 }
+ ATE AQUI */
 
 /* FUNCOES DE IMPRESSAO */
 
@@ -253,38 +274,51 @@ void imprime_borda()
 		}
 }
 
-void imprime_alien(int lin, int col, int tipo, entidades *tabuleiro)
+void atribui_desenho(char *desenho, int tipo, int forma)
 {
-	int i, j, nlin, ncol;
-	char *forma_atual;
+	if (forma == 0)
+		if (tipo == 0)
+			desenho = NAVE_MAE_1;
+		else if (tipo == 1)
+			desenho = ALIEN_1_1;
+		else if (tipo == 2)
+			desenho = ALIEN_2_1;
+		else if (tipo == 3)
+			desenho = ALIEN_3_1;
 	
-	if (!tabuleiro->forma)
-		forma_atual = tabuleiro->naves[tipo].forma1;
 	else
-		forma_atual = tabuleiro->naves[tipo].forma2;
+		if (tipo == 0)
+			desenho = NAVE_MAE_2;
+		else if (tipo == 1)
+			desenho = ALIEN_1_2;
+		else if (tipo == 2)
+			desenho = ALIEN_2_2;
+		else if (tipo == 3)	
+			desenho = ALIEN_3_2;
+}
+
+void imprime_alien(int lin, int col, int tipo, int forma)
+{
+	int i, l_atual, c_atual, ncol;
+	char *desenho;
 	
-	nlin = tabuleiro->naves[tipo].alt;
-	ncol = tabuleiro->naves[tipo].larg;
-	for (i = 0; i < nlin; i++)
-		for (j = 0; j < tabuleiro->naves[tipo].larg; j++)
-			{
-				move(lin+i, col+j);
-				addch(forma_atual[ncol*i + j]);
-			}
+	atribui_desenho(desenho, tipo, forma);
+
+	ncol = srlen(desenho) / 3 ;
+	for (i = 0; i < strlen(desenho); i++)
+	{
+		l_atual = lin + (i / ncol);
+		c_atual = col + (i % ncol);
+		move(l_atual, c_atual);
+		addch(desenho[i]);
+	}
 }
 
 void imprime_barreira(int lin, int col, int num_bar, entidades *tabuleiro)
 {
 	int i, tam;
 	bloco atual;
-	
-	tam = tabuleiro->barreiras[num_bar].tam;
-	for (i = 0; i < tam; i++)
-	{
-		atual = tabuleiro->barreiras[num_bar].blocos[i];
-		move(lin + atual.lin, col + atual.col);
-		addch(atual.forma);
-	}
+		
 }
 
 void imprime_canhao(int lin, int col, entidades *tabuleiro)
@@ -316,7 +350,7 @@ void imprime_tela(t_lista *l_tela, entidades *tabuleiro)
 		if (tipo <= 3)
 			imprime_alien(lin, col, tipo, tabuleiro);
 		else if (tipo == 4)
-			imprime_barreira(lin, col, cont_bar++, tabuleiro);
+			imprime_barreira(lin, col, tipo);
 		else if (tipo == 5)
 			imprime_canhao(lin, col, tabuleiro);
 
@@ -330,10 +364,10 @@ void move_aliens(t_lista *l_tela)
 	int maiorcol, menorcol;
 	
 	inicializa_atual_inicio(l_tela);
-	while(t_lista->atual.tipo < 1 || t_lista->atual.tipo > 3)
+	while(t_lista->atual.tipo < 1)
 		incrementa_atual(l_tela);
 	
-	while(t_lista->atual.tipo >= 1 && t_lista->atual.tipo <= 3)	
+	while(t_lista->atual.tipo <= 3)	
 	{
 		maiorcol
 		incrementa_atual(l_tela);

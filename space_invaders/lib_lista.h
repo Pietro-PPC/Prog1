@@ -14,8 +14,9 @@
 	1 - alien_1
 	2 - alien_2
 	3 - alien_3
-	4 - barreira
-	5 - canhao
+	4 - barreira_1
+	5 - barreira_2
+	6 - canhao
   coord:
   	coordenadas do canto superior esquerdo do objeto
   vel:
