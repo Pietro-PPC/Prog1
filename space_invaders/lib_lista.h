@@ -10,29 +10,28 @@
 
 /*
   tipo:
-  	0 - nave_mae
-	1 - alien_1
-	2 - alien_2
-	3 - alien_3
-	4 - barreira_1
-	5 - barreira_2
-	6 - canhao
+      0 - nave_mae
+    1 - alien_1
+    2 - alien_2
+    3 - alien_3
+    4 - barreira_1
+    5 - barreira_2
+    6 - canhao
   coord:
-  	coordenadas do canto superior esquerdo do objeto
+      coordenadas do canto superior esquerdo do objeto
   vel:
-  	velocidade do elemento
+      velocidade do elemento
   estado:
-	0 - vivo 1
-	1 - vivo 2
-	2 - morrendo
-  	3 - morto
+    0 - vivo 1
+    1 - vivo 2
+    2 - morrendo
 */
 
 struct t_nodo {
     int tipo;
-	int coord[2];
-	int vel;
-	int estado;
+    int coord[2];
+    int vel;
+    int estado;
     struct t_nodo *prox;
     struct t_nodo *prev;
 };
@@ -123,6 +122,9 @@ void decrementa_atual(t_lista *l); /* OK */
   Se atual não for válido a função retorna zero senão retorna 1.
 */
 int consulta_item_atual(int *tipo, int *lin, int *col, int *vel, int *estado, t_lista *l); /* OK */
+
+
+int modifica_item_atual(int tipo, int lin, int col, int vel, int estado, t_lista *l);
 
 /*
   Remove o elemento apontado por atual da lista l e o retorna em *item.
