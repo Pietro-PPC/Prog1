@@ -10,7 +10,7 @@
 
 /*
   tipo:
-      0 - nave_mae
+    0 - nave_mae
     1 - alien_1
     2 - alien_2
     3 - alien_3
