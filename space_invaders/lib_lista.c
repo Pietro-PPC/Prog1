@@ -215,17 +215,25 @@ int modifica_item_atual(int tipo, int lin, int col, int vel, int estado, t_lista
     return 1;
 }
 
+/* remove atual e aponta atual para proximo da lista ou para null caso seja o ultimo */
 int remove_item_atual(t_lista *l)
 {
+    t_nodo *aux;
     if (l->atual == NULL)
         return 0;
-
+    
+    if (l->atual->prox == l->fim)
+        aux = NULL;
+    else
+        aux = l->atual->prox;
+        
     l->atual->prox->prev = l->atual->prev;
     l->atual->prev->prox = l->atual->prox;
 
     l->atual->prev = NULL;
     l->atual->prox = NULL;
     free(l->atual);
+    l->atual = aux;
     l->tamanho--;
 
     return 1;

@@ -17,6 +17,8 @@
     4 - barreira_1
     5 - barreira_2
     6 - canhao
+    7 - tiro
+    8 - bomba
   coord:
       coordenadas do canto superior esquerdo do objeto
   vel:
