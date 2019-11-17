@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <ncurses.h>
+#include <time.h>
 #include "lib_lista.h"
 
 #define NAVE_MAE_1 " /MMMMM\\ AMoMoMoMA \\/'-'\\/ "
@@ -73,17 +74,17 @@ int insere_aliens( t_lista *l_tela )
     int i, j;
     
     for (i = 0; i < 11; i++)
-        if (!insere_fim_lista(1, 7, (5 + 7*i), 10, 1, l_tela)) 
+        if (!insere_fim_lista(1, 7, (5 + 7*i), 11, 1, l_tela)) 
             return 0;
     
     for (i = 0; i < 2; i++)
         for (j = 0; j < 11; j++)
-            if (!insere_fim_lista(2, (11 + 4*i), (4 + 7*j), 10, 1, l_tela)) 
+            if (!insere_fim_lista(2, (11 + 4*i), (4 + 7*j), 11, 1, l_tela)) 
                 return 0;
 
     for (i = 0; i < 2; i++)
         for (j = 0; j < 11; j++)
-            if (!insere_fim_lista(3, (19 + 4*i), (4 + 7*j), 10, 1, l_tela))
+            if (!insere_fim_lista(3, (19 + 4*i), (4 + 7*j), 11, 1, l_tela))
                 return 0;
     
     return 1;
@@ -378,26 +379,57 @@ void move_alien(int *lin, int *col, int *vel, int sentido)
         *col += sentido;
 }
 
+int levou_tiro_alien(int tipo_a, int lin_a, int col_a, t_jogo *jogo)
+{
+    int tipo_p, lin_p, col_p, vel_p, estado_p, alt, larg;
+
+    alt = jogo->descricao_tipo[tipo_a].alt;
+    larg = jogo->descricao_tipo[tipo_a].larg;
+    inicializa_atual_inicio(&jogo->l_projeteis);
+    while (consulta_item_atual(&tipo_p, &lin_p, &col_p, &vel_p, &estado_p, &jogo->l_projeteis))
+    {
+        if (lin_a <= lin_p && (lin_a + alt) > lin_p  &&  col_a <= col_p && (col_a + larg) > col_p)
+        {
+            remove_item_atual(&jogo->l_projeteis);
+            return 1;
+        }
+        incrementa_atual(&jogo->l_projeteis);
+    }
+    return 0;
+}
+
 void atualiza_aliens(t_jogo *jogo)
 {
     int tipo, lin, col, vel, estado;
+    int moveu;
     
     consulta_item_atual(&tipo, &lin, &col, &vel, &estado, &jogo->l_tela);
-    if (jogo->iter % (21 - vel) == 0)
+    moveu = (jogo->iter % (21 - vel) == 0);
+    while (tipo <= 3)
     {
-        while (tipo <= 3)
+        if (moveu && estado < 2)
         {
-            if (estado < 2)
-                estado = !estado;            
+            estado = !estado;
             move_alien(&lin, &col, &vel, jogo->aliens.sentido);
-
+        }
+        
+        if (estado == 2)
+            remove_item_atual(&jogo->l_tela);
+        else
+        {
+            if (levou_tiro_alien(tipo, lin, col, jogo))
+                estado = 2;
             modifica_item_atual(tipo, lin, col, vel, estado, &jogo->l_tela);
             incrementa_atual(&jogo->l_tela);
-            consulta_item_atual(&tipo, &lin, &col, &vel, &estado, &jogo->l_tela);
         }
+        consulta_item_atual(&tipo, &lin, &col, &vel, &estado, &jogo->l_tela);
+    }
+
+    if (moveu)
+    {
         max_min_col(jogo);
         atualiza_sentido_aliens(jogo);
-    }    
+    }
 }
 
 int inicializa_tela()
@@ -459,7 +491,7 @@ int atira(t_jogo *jogo)
 
     inicializa_atual_fim(&jogo->l_tela);
     consulta_item_atual(&tipo, &lin, &col, &vel, &estado, &jogo->l_tela);
-    if (!insere_fim_lista(7, lin-1, col+2, 15, 1, &jogo->l_projeteis))
+    if (!insere_fim_lista(7, lin-1, col+2, 20, 1, &jogo->l_projeteis))
         return 0;
     return 1;
 }
@@ -473,13 +505,54 @@ void atualiza_projeteis(t_jogo *jogo)
     {
         if (lin == 1)
             remove_item_atual(&jogo->l_projeteis);
-        else
+        else if(jogo->iter % (21 - vel) == 0)
         {
             lin--;
             modifica_item_atual(tipo, lin, col, vel, estado, &jogo->l_projeteis);
         }
 
         incrementa_atual(&jogo->l_projeteis);
+    }
+}
+
+int morreu_barreira(int lin_b, int col_b, t_jogo *jogo)
+{
+    int tipo_p, lin_p, col_p, vel_p, estado_p;
+    
+    inicializa_atual_inicio(&jogo->l_projeteis);
+    while (consulta_item_atual(&tipo_p, &lin_p, &col_p, &vel_p, &estado_p, &jogo->l_projeteis))
+    {
+        if (lin_p == lin_b && col_p == col_b)
+        {
+            remove_item_atual(&jogo->l_projeteis);
+            return 1;
+        }
+        incrementa_atual(&jogo->l_projeteis);
+    }
+
+    return 0;
+}
+/* funcao consulta passa como parametro ponteiros */
+/* nodo carrega um objeto ao inves de atributos */
+void atualiza_barreiras(t_jogo *jogo)
+{
+    int tipo, lin, col, vel, estado;
+    
+    consulta_item_atual(&tipo, &lin, &col, &vel, &estado, &jogo->l_tela);
+    while (tipo <= 5)
+    {
+        if (estado == 2)
+            remove_item_atual(&jogo->l_tela);
+        else if (morreu_barreira(lin, col, jogo))
+        {
+            estado = 2;
+            modifica_item_atual(tipo, lin, col, vel, estado, &jogo->l_tela);
+            incrementa_atual(&jogo->l_tela);
+        }
+        else
+            incrementa_atual(&jogo->l_tela);
+
+        consulta_item_atual(&tipo, &lin, &col, &vel, &estado, &jogo->l_tela);
     }
 }
 
@@ -500,6 +573,8 @@ int main()
         exit(1);
     }
     
+    srand(time(NULL));
+
     tecla = getch();
     while(tecla != 'q')
     {
@@ -508,9 +583,10 @@ int main()
         incrementa_atual(&jogo.l_tela);
         
         atualiza_projeteis(&jogo);
+
         atualiza_aliens(&jogo);
-/*      atualiza_barreiras(&jogo);
-*/      
+        atualiza_barreiras(&jogo);
+      
         tecla = getch();
         if (tecla == KEY_LEFT)
             move_canhao_esquerda(&jogo);
