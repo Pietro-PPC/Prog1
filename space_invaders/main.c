@@ -46,6 +46,7 @@ typedef struct s_individuo
 typedef struct s_info
 {
     int sentido;
+    int quant;
     int max_col;
     int min_col;
 } t_info;
@@ -69,24 +70,33 @@ int insere_nave_mae(t_lista *l_tela)
     return 1;
 }
 
-int insere_aliens( t_lista *l_tela )
+int insere_aliens( t_jogo *jogo )
 {
     int i, j;
     
     for (i = 0; i < 11; i++)
-        if (!insere_fim_lista(1, 7, (5 + 7*i), 11, 1, l_tela)) 
+    {
+        if (!insere_fim_lista(1, 7, (5 + 7*i), 11, 1, &jogo->l_tela)) 
             return 0;
-    
-    for (i = 0; i < 2; i++)
-        for (j = 0; j < 11; j++)
-            if (!insere_fim_lista(2, (11 + 4*i), (4 + 7*j), 11, 1, l_tela)) 
-                return 0;
+        (jogo->aliens.quant)++;
+    }
 
     for (i = 0; i < 2; i++)
         for (j = 0; j < 11; j++)
-            if (!insere_fim_lista(3, (19 + 4*i), (4 + 7*j), 11, 1, l_tela))
+        {
+            if (!insere_fim_lista(2, (11 + 4*i), (4 + 7*j), 11, 1, &jogo->l_tela)) 
                 return 0;
-    
+            (jogo->aliens.quant)++;
+        }
+
+    for (i = 0; i < 2; i++)
+        for (j = 0; j < 11; j++)
+        {
+            if (!insere_fim_lista(3, (19 + 4*i), (4 + 7*j), 11, 1, &jogo->l_tela))
+                return 0;
+            (jogo->aliens.quant)++;
+        }
+
     return 1;
 }
 
@@ -133,14 +143,14 @@ int insere_canhao(t_lista *l_tela)
     return 1;
 }
 
-int inicializa_lista_tela( t_lista *l_tela )
+int inicializa_lista_tela( t_jogo *jogo )
 {
-    if (!inicializa_lista (l_tela)) return 0;
+    if (!inicializa_lista (&jogo->l_tela)) return 0;
     
-    if (!insere_nave_mae (l_tela)) return 0;
-    if (!insere_aliens (l_tela)) return 0;
-    if (!insere_barreiras (l_tela)) return 0;
-    if (!insere_canhao (l_tela)) return 0;
+    if (!insere_nave_mae (&jogo->l_tela))  return 0;
+    if (!insere_aliens (jogo))             return 0;
+    if (!insere_barreiras (&jogo->l_tela)) return 0;
+    if (!insere_canhao (&jogo->l_tela))    return 0;
 
     return 1;
 }
@@ -336,18 +346,19 @@ void max_min_col(t_jogo *jogo)
 
 int inicializa_jogo(t_jogo *jogo)
 {
-    if(!inicializa_lista_tela(&jogo->l_tela) ||
+    jogo->aliens.quant = 0;
+    
+    if(!inicializa_lista_tela(jogo) ||
        !inicializa_lista(&jogo->l_projeteis)   )
     {
         printf("Listas nao inicializadas com sucesso!\n");
         return 0;
     }
 
-    descreve_tipos(jogo->descricao_tipo);
-
     jogo->aliens.sentido = 1;
     max_min_col(jogo);
 
+    descreve_tipos(jogo->descricao_tipo);
     jogo->iter = 1;
 
     return 1;
@@ -398,12 +409,23 @@ int levou_tiro_alien(int tipo_a, int lin_a, int col_a, t_jogo *jogo)
     return 0;
 }
 
+void inicializa_atual_aliens(int *tipo, int *lin, int *col, int *vel, int *estado, t_jogo *jogo)
+{
+    inicializa_atual_inicio(&jogo->l_tela);
+    consulta_item_atual(tipo, lin, col, vel, estado, &jogo->l_tela);
+    while(*tipo < 1)
+    {
+        incrementa_atual(&jogo->l_tela);
+        consulta_item_atual(tipo, lin, col, vel, estado, &jogo->l_tela);
+    }
+}
+
 void atualiza_aliens(t_jogo *jogo)
 {
     int tipo, lin, col, vel, estado;
     int moveu;
-    
-    consulta_item_atual(&tipo, &lin, &col, &vel, &estado, &jogo->l_tela);
+   
+    inicializa_atual_aliens(&tipo, &lin, &col, &vel, &estado, jogo);
     moveu = (jogo->iter % (21 - vel) == 0);
     while (tipo <= 3)
     {
@@ -414,7 +436,10 @@ void atualiza_aliens(t_jogo *jogo)
         }
         
         if (estado == 2)
+        {
             remove_item_atual(&jogo->l_tela);
+            (jogo->aliens.quant)--;
+        }
         else
         {
             if (levou_tiro_alien(tipo, lin, col, jogo))
@@ -457,13 +482,6 @@ void move_canhao_esquerda(t_jogo *jogo)
     int tipo, lin, col, vel, estado;
    
     consulta_item_atual(&tipo, &lin, &col, &vel, &estado, &jogo->l_tela);
-    while (tipo != 6)
-    {
-        incrementa_atual(&jogo->l_tela);
-        consulta_item_atual(&tipo, &lin, &col, &vel, &estado, &jogo->l_tela);
-    }
-
-    consulta_item_atual(&tipo, &lin, &col, &vel, &estado, &jogo->l_tela);
     if (col > 1)
         col--;
     modifica_item_atual(tipo, lin, col, vel, estado, &jogo->l_tela);
@@ -472,12 +490,6 @@ void move_canhao_esquerda(t_jogo *jogo)
 void move_canhao_direita(t_jogo *jogo)
 {
     int tipo, lin, col, vel, estado;
-    consulta_item_atual(&tipo, &lin, &col, &vel, &estado, &jogo->l_tela); 
-    while (tipo != 6)
-    {
-        incrementa_atual(&jogo->l_tela);
-        consulta_item_atual(&tipo, &lin, &col, &vel, &estado, &jogo->l_tela);
-    }
 
     consulta_item_atual(&tipo, &lin, &col, &vel, &estado, &jogo->l_tela);
     if (col + jogo->descricao_tipo[tipo].larg - 1 < 98)
@@ -556,10 +568,15 @@ void atualiza_barreiras(t_jogo *jogo)
     }
 }
 
+void solta_bombas(t_jogo *jogo)
+{
+
+}
+
 int main()
 {
     t_jogo jogo;
-    int tecla;
+    int tecla, n;
 
     if (!inicializa_jogo( &jogo ))
     {
@@ -576,11 +593,9 @@ int main()
     srand(time(NULL));
 
     tecla = getch();
-    while(tecla != 'q')
+    while(tecla != 'q' && jogo.aliens.quant)
     {
         imprime_tela(&jogo);
-        inicializa_atual_inicio(&jogo.l_tela);
-        incrementa_atual(&jogo.l_tela);
         
         atualiza_projeteis(&jogo);
 
@@ -600,6 +615,8 @@ int main()
                 exit(1);
             }
         }
+
+        solta_bombas(&jogo);
 
         jogo.iter++;
         usleep(INTERVALO);
