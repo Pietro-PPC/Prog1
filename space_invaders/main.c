@@ -55,6 +55,7 @@ typedef struct s_info
 typedef struct s_jogo
 {
     int iter;
+    int tiros;
     t_info aliens;
     t_individuo descricao_tipo[9];
     t_lista l_do_mal;
@@ -776,7 +777,10 @@ int morreu_nave_mae(int tipo_n, int lin_n, int col_n, t_jogo *jogo)
     {
         if (tipo_p == 7)
             if (colisao_canhao_alien(tipo_n, lin_n, col_n, tipo_p, lin_p, col_p, jogo))
+            {
+                remove_item_atual(&jogo->l_projeteis);
                 return 1;
+            }
 
         incrementa_atual(&jogo->l_projeteis);
     }
