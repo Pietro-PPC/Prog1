@@ -66,7 +66,7 @@ typedef struct s_jogo
 
 int insere_nave_mae(t_lista *l_do_mal)
 {
-    if (!insere_fim_lista(0, 3, 99, 19, 3, l_do_mal)) 
+    if (!insere_fim_lista(0, 3, 99, 20, 3, l_do_mal)) 
         return 0;
 
     return 1;
@@ -764,7 +764,7 @@ int nave_mae_viva(t_jogo *jogo)
 void invoca_nave_mae(t_jogo *jogo)
 {
     inicializa_atual_inicio(&jogo->l_do_mal);
-    modifica_item_atual(0, 3, -7, 19, 1, &jogo->l_do_mal);
+    modifica_item_atual(0, 3, -7, 20, 1, &jogo->l_do_mal);
 }
 
 int morreu_nave_mae(int tipo_n, int lin_n, int col_n, t_jogo *jogo)
