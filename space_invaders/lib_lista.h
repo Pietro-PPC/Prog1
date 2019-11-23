@@ -27,6 +27,7 @@
     0 - vivo 1
     1 - vivo 2
     2 - morrendo
+    3 - morto (apenas para nave_mae)
 */
 
 struct t_nodo {
