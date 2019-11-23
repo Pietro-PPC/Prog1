@@ -49,6 +49,7 @@ typedef struct s_info
     int quant;
     int max_col;
     int min_col;
+    int max_lin;
 } t_info;
 
 typedef struct s_jogo
@@ -328,17 +329,19 @@ void descreve_tipos(t_individuo *descricao_tipo)
     descreve_bomba    (&descricao_tipo[8]);
 }
 
-void max_min_col(t_jogo *jogo)
+void max_min(t_jogo *jogo)
 {
-    int tipo, lin, col, vel, estado, larg;
+    int tipo, lin, col, vel, estado, alt, larg;
 
     inicializa_atual_inicio(&jogo->l_do_mal);
     incrementa_atual(&jogo->l_do_mal);  /* primeiro item eh nave mae */
     consulta_item_atual(&tipo, &lin, &col, &vel, &estado, &jogo->l_do_mal);
 
     larg = jogo->descricao_tipo[tipo].larg;
+    alt = jogo->descricao_tipo[tipo].alt;
     jogo->aliens.max_col = col + larg-1;
     jogo->aliens.min_col = col;
+    jogo->aliens.max_lin = lin + alt-1;
 
     while (consulta_item_atual(&tipo, &lin, &col, &vel, &estado, &jogo->l_do_mal))
     {
@@ -347,6 +350,9 @@ void max_min_col(t_jogo *jogo)
             jogo->aliens.max_col = col + larg-1;
         else if (col < jogo->aliens.min_col)
             jogo->aliens.min_col = col;
+
+        if (lin + alt-1 > jogo->aliens.max_lin)
+            jogo->aliens.max_lin = lin + alt-1;
         
         incrementa_atual(&jogo->l_do_mal);
     }
@@ -364,7 +370,7 @@ int inicializa_jogo(t_jogo *jogo)
     }
 
     jogo->aliens.sentido = 1;
-    max_min_col(jogo);
+    max_min(jogo);
 
     descreve_tipos(jogo->descricao_tipo);
     jogo->iter = 1;
@@ -457,7 +463,7 @@ void atualiza_aliens(t_jogo *jogo)
 
     if (moveu)
     {
-        max_min_col(jogo);
+        max_min(jogo);
         atualiza_sentido_aliens(jogo);
     }
 }
@@ -726,6 +732,20 @@ int canhao_morreu(t_jogo *jogo)
     return 0;
 }
 
+int aliens_chao(t_jogo *jogo)
+{
+    return jogo->aliens.max_lin >= 35; 
+}
+
+int fim_jogo(t_jogo *jogo)
+{
+    if (canhao_morreu(jogo))
+        return 1;
+    if (aliens_chao(jogo))
+        return 1;
+    return 0;
+}
+
 int main()
 {
     t_jogo jogo;
@@ -775,7 +795,7 @@ int main()
             exit(1);
         }
 
-        if (canhao_morreu(&jogo))
+        if (fim_jogo(&jogo))
         {
             imprime_tela(&jogo);
             while(tecla != 'q')
