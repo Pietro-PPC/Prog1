@@ -1,14 +1,17 @@
 /*
-  Feito por Marcos Castiho para a disciplina CI1001 - Programacao I
-  Em 18/10/2019.
-  Define a estrutura de dados para o Tipo Abstrato de Dados Lista
-  como sendo uma lista duplamente encadeada com sentinelas no inicio
-  e no final. A cabeca da lista tem ponteiros para o inicio, fim e
-  para um elemento qualquer da lista, alem do tamanho da lista.
-  Contem os prototipos publicos das funcoes que manipulam o TAD.
+  Feito por Pietro Polinari Cavassin, adaptacao da biblioteca criada por
+  Marcos Castiho para a disciplina CI1001 - Programacao I.
+
+  Define a estrutura para o TAD lista duplamente encadeada, cujos
+  nodos possuem os dados dos elementos da tela para a construcao do 
+  space invaders.
+  A lista possui ponteiros para o inicio, fim, e um elemento atual, 
+  que pode transitar pela lista conforme o uso das funcoes.
+  Nesse arquivo estao os prototipos das funcoes da biblioteca.
 */
 
 /*
+  DESCRICAO DOS ELEMENTOS DE UM NODO:
   tipo:
     0 - nave_mae
     1 - alien_1
@@ -49,89 +52,88 @@ struct t_lista {
 typedef struct t_lista t_lista;
 
 /*
-  Cria uma lista vazia. Ela eh duplamente encadeada e tem sentinelas no
-  inicio e no final. Tambem tem um apontador para um elemento qualquer.
+  Cria uma lista e aloca suas sentinelas.
+  Retorna 1 se a alocacao foi bem sucedida ou 0 caso contrario
 */
-int inicializa_lista(t_lista *l); /* OK */
+int inicializa_lista(t_lista *l);
 
 /*
-  Retorna 1 se a lista está vazia e zero caso contrário.
+  Retorna 1 se a lista estiver vazia e 0 caso contrario
 */
-int lista_vazia(t_lista *l); /* OK */
+int lista_vazia(t_lista *l);
 
 /*
-  Remove todos os elementos da lista e faz com que ela aponte para NULL.
+  Remove elementos da lista e aponta inicio e fim para NULL
 */
-void destroi_lista(t_lista *l); /* OK */
+void destroi_lista(t_lista *l); 
 
 /*
-  Insere o elemento item no início da lista.
-  Retorna 1 se a operação foi bem sucedida e zero caso contrário.
+  Insere dados especificados no inicio da lista.
+  Retorna 1 se a operação foi bem sucedida e zero caso contrario.
 */
-int insere_inicio_lista(int tipo, int lin, int col, int vel, int estado, t_lista *l); /* OK */
+int insere_inicio_lista(int tipo, int lin, int col, int vel, int estado, t_lista *l);
 
 /*
-  Retorna o tamanho da lista em *tam.
-  Retorna 1 se a operação foi bem sucedida e zero caso contrário.
+  Retorna o tamanho da lista
 */
-int tamanho_lista(t_lista *l); /* OK */
+int tamanho_lista(t_lista *l); 
 
 /*
-  Insere o elemento item no final da lista.
-  Retorna 1 se a operação foi bem sucedida e zero caso contrário.
+  Insere dados especificados no final da lista.
+  Retorna 1 se a operação foi bem sucedida e zero caso contrario.
 */
-int insere_fim_lista(int tipo, int lin, int col, int vel, int estado, t_lista *l); /* OK */
+int insere_fim_lista(int tipo, int lin, int col, int vel, int estado, t_lista *l); 
 
 /*
-  Remove o primeiro elemento da lista e o retorna em *item.
-  Retorna 1 se a operação foi bem sucedida e zero caso contrário.
+  Remove o primeiro elemento da lista.
+  Retorna 1 se a operação foi bem sucedida e zero caso contrario.
 */
-int remove_inicio_lista(t_lista *l); /* OK */
+int remove_inicio_lista(t_lista *l); 
 
 /*
-  Remove o último elemento da lista e o retorna em *item.
-  Retorna 1 se a operação foi bem sucedida e zero caso contrário.
+  Remove o último elemento da lista.
+  Retorna 1 se a operação foi bem sucedida e zero caso contrario.
 */
-int remove_fim_lista(t_lista *l); /* OK */
+int remove_fim_lista(t_lista *l); 
 
 /* 
-  Inicializa o ponteiro atual para o primeiro elemento da lista.
-  Retorna 1 se a operação foi bem sucedida e zero caso contrário.
+  Inicializa o ponteiro atual no primeiro elemento da lista.
+  Retorna 1 se a operação foi bem sucedida e zero caso contrario.
 */
-int inicializa_atual_inicio(t_lista *l); /* OK */
+int inicializa_atual_inicio(t_lista *l);
 
 /* 
-  Inicializa o ponteiro atual para o ultimo elemento da lista.
-  Retorna 1 se a operação foi bem sucedida e zero caso contrário.
+  Inicializa o ponteiro atual no ultimo elemento da lista.
+  Retorna 1 se a operação foi bem sucedida e zero caso contrario.
 */
-int inicializa_atual_fim(t_lista *l); /* OK */
+int inicializa_atual_fim(t_lista *l); 
 
 /*
-  Faz o ponteiro atual apontar para o próximo nodo da lista l e retorna 
-  este ponteiro. Se atual estiver apontando para o último, isto é, não 
-  tem próximo, retorna NULL.
+  Faz o ponteiro atual apontar para o próximo nodo da lista. 
+  Se atual não tem próximo, retorna NULL.
 */
-void incrementa_atual(t_lista *l); /* OK */
+void incrementa_atual(t_lista *l);
 
 /*
   Faz o ponteiro atual apontar para o nodo anterior da lista l e retorna 
-  este ponteiro. Se atual estiver apontando para o primeiro, isto é, não 
-  tem anterior, retorna NULL.
+  este ponteiro. Se atual não tem anterior, retorna NULL.
 */
-void decrementa_atual(t_lista *l); /* OK */
+void decrementa_atual(t_lista *l);
 
 /*
-  Retorna em *item o valor contido na chave apontada pelo ponteiro atual. 
-  Se atual não for válido a função retorna zero senão retorna 1.
+  Retorna os valores contidos no nodo apontado pelo ponteiro atual. 
+  Se atual não for válido a função retorna 0, senao retorna 1.
 */
-int consulta_item_atual(int *tipo, int *lin, int *col, int *vel, int *estado, t_lista *l); /* OK */
+int consulta_item_atual(int *tipo, int *lin, int *col, int *vel, int *estado, t_lista *l);
 
-
+/*
+  Atribui os parametros passados ao nodo apontado pelo ponteiro atual.
+*/
 int modifica_item_atual(int tipo, int lin, int col, int vel, int estado, t_lista *l);
 
 /*
-  Remove o elemento apontado por atual da lista l e o retorna em *item.
+  Remove o elemento apontado por atual da lista l.
   Faz o atual apontar para o sucessor do nodo removido.
   Retorna 1 se houve sucesso e zero caso contrário.
 */
-int remove_item_atual(t_lista *l); /* OK */
+int remove_item_atual(t_lista *l);
