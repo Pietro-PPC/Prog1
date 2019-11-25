@@ -284,26 +284,57 @@ void atualiza_bomba(int tipo, int lin, int col, int vel, int estado, t_jogo *jog
 void atualiza_projeteis(t_jogo *jogo);
 
 /*
-  Testa se a barreira 
+  Retorna 1 se a barreira levou um tiro ou uma bomba
+  Retorna 0 caso contrario
 */
 int morreu_barreira(int tipo_b, int lin_b, int col_b, t_jogo *jogo);
 
+/*
+  Atualiza o estado das barreiras de acordo com a situacao atual do jogo
+*/
 void atualiza_barreiras(t_jogo *jogo);
 
+/*
+  Insere uma bomba na posicao especificada
+*/
 int solta_bomba(int tipo, int lin, int col, t_jogo *jogo);
 
+/*
+  Escolhe aleatoriamente alienigenas para soltarem bombas
+*/
 int solta_bombas(t_jogo *jogo);
 
+/*
+  Testa se o canhao levou uma bomba ou encostou em um alien
+*/
 int canhao_morreu(t_jogo *jogo);
 
+/*
+  Testa se algum alien chegou no chao
+*/
 int aliens_chao(t_jogo *jogo);
 
+/*
+  Testa se o jogo acabou ou pela morte do canhao ou por algum alien conseguir pousar
+*/
 int fim_jogo(t_jogo *jogo);
 
+/*
+  Testa se a nave mae esta viva
+*/
 int nave_mae_viva(t_jogo *jogo);
 
+/*
+  Insere a nave mae no canto superior esquerdo da tela
+*/
 void invoca_nave_mae(t_jogo *jogo);
 
+/*
+  Testa se a nave mae morreu por um tiro
+*/
 int morreu_nave_mae(int tipo_n, int lin_n, int col_n, t_jogo *jogo);
 
+/*
+  Atualiza o local da nave mae e seu estado.
+*/
 void atualiza_nave_mae(t_jogo *jogo);
