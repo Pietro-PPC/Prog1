@@ -73,89 +73,219 @@ typedef struct s_jogo
 
 /* Funcoes de inicializacao da lista de elementos */
 
+/*
+  insere nave mae no fim da lista desejada
+*/
 int insere_nave_mae(t_lista *l_do_mal);
 
+/*
+  insere todos os aliens no fim da lista desejada
+*/
 int insere_aliens( t_jogo *jogo );
 
+/*
+  insere todos os blocos de uma barreira no fim da lista desejada
+*/
 int insere_barreira(int lin, int col, t_lista *l_do_bem);
 
+/*
+  insere varias barreiras no fim da lista desejada
+*/
 int insere_barreiras(t_lista *l_do_bem);
 
+/*
+  insere canhao no fim da lista desejada
+*/
 int insere_canhao(t_lista *l_do_bem);
 
+/*
+  insere todos os elementos necessarios nas listas do jogo
+*/
 int inicializa_listas_iniciais( t_jogo *jogo );
 
 /* FUNCOES DE IMPRESSAO */
 
+/*
+  imprime a borda do jogo na tela do ncurses
+*/
 void imprime_borda();
 
+/*
+  imprime o objeto do tipo especificado na linha e coluna especificadas
+*/
 void imprime_objeto(int tipo, int lin, int col, int estado, t_jogo *jogo);
 
+/*
+  imprime todos os elementos vivos do jogo
+*/
 void imprime_tela(t_jogo *jogo);
 
 /* funcoes de inicializacao */
 
+/*
+  Atribui strings definidas no inicio do programa a descricao da nave mae,
+  alem da sua altura e largura
+*/
 void descreve_nave_mae(t_individuo *nave_mae);
 
+/*
+  Atribui strings definidas no inicio do programa a descricao do alien 1,
+  alem da sua altura e largura
+*/
 void descreve_alien_1(t_individuo *alien);
 
+/*
+  Atribui strings definidas no inicio do programa a descricao do alien 2,
+  alem da sua altura e largura
+*/
 void descreve_alien_2(t_individuo *alien);
 
+/*
+  Atribui strings definidas no inicio do programa a descricao do alien 3,
+  alem da sua altura e largura
+*/
 void descreve_alien_3(t_individuo *alien);
 
+/*
+  Atribui strings definidas no inicio do programa a descricao do bloco tipo 1,
+  alem da sua altura e largura
+*/
 void descreve_bloco_1(t_individuo *bloco);
 
+/*
+  Atribui strings definidas no inicio do programa a descricao do bloco tipo 2,
+  alem da sua altura e largura
+*/
 void descreve_bloco_2(t_individuo *bloco);
 
+/*
+  Atribui strings definidas no inicio do programa a descricao do canhao,
+  alem da sua altura e largura
+*/
 void descreve_canhao(t_individuo *canhao);
 
+/*
+  Atribui strings definidas no inicio do programa a descricao do tiro do canhao,
+  alem da sua altura e largura
+*/
 void descreve_tiro(t_individuo *tiro);
 
+/*
+  Atribui strings definidas no inicio do programa a descricao da bomba,
+  alem da sua altura e largura
+*/
 void descreve_bomba(t_individuo *bomba);
 
+/*
+  Chama todas as funcoes acima para descricao dos tipos.
+*/
 void descreve_tipos(t_individuo *descricao_tipo);
 
+/*
+  Inicializa o apontador atual nos aliens para lista de seres do mal
+*/
 void inicializa_atual_aliens(t_lista *l_do_mal);
 
+/*
+  Acha a maior linha e coluna e a menor coluna que contem aliens para auxilio
+  na sua movimentacao
+*/
 void max_min(t_jogo *jogo);
 
+/*
+  Aloca o vetor de descricao dos tipos 
+*/
 int inicializa_vetor_descricao(t_jogo *jogo);
 
+/*
+  Inicializa todas as variaveis que devem ser inicializadas antes do inicio do jogo
+*/
 int inicializa_jogo(t_jogo *jogo);
 
+/*
+  Reinicializa todas as variaveis necessarias apos o jogador matar todos os aliens 
+  de certa fase
+*/
 int reinicializa_jogo(t_jogo *jogo);
 
+/*
+  Inicializa a tela do ncurses com todas as configuracoes necessarias
+*/
 int inicializa_tela();
 
-/* funcoes de atualizacao */
+/* FUNCOES DE ATUALIZACAO */
 
+/*
+  Soma os pontos pela morte de um alien ou nave mae do tipo passado por parametro
+*/
 void soma_pontos(int *pontos, int tipo);
 
+/*
+  Retorna 1 se ha interseccao entre os intervalos a-max_a e b-max_b
+  caso contrario retorna 0
+*/
 int interseccao(int a, int max_a, int b, int max_b);
 
+/*
+  Retorna 1 se ha colisao entre elementos dos tipos especificados e linha e coluna especificadas
+*/
 int colisao(int tipo_a, int lin_a, int col_a, int tipo_b, int lin_b, int col_b, t_jogo *jogo);
 
+/*
+  Atualiza o sentido em que os aliens vao de acordo com sua posicao na tela
+*/
 void atualiza_sentido_aliens(t_jogo *jogo);
 
+/*
+  Move o alien pela tela de acordo com seu sentido e velocidade
+*/
 void move_alien(int *lin, int *col, int *vel, int sentido);
 
+/*
+  Testa se algum dos tiros atingiu o alien
+*/
 int levou_tiro_alien(int tipo_a, int lin_a, int col_a, t_jogo *jogo);
 
-
+/*
+  Chama todas as funcoes que atualizam sentido, posicao, velocidade e estado dos
+  aliens
+*/
 void atualiza_aliens(t_jogo *jogo);
 
+/*
+  Movimenta canhao para a esquerda
+*/
 void move_canhao_esquerda(t_jogo *jogo);
 
+/*
+  Movimenta canhao para a direita
+*/
 void move_canhao_direita(t_jogo *jogo);
 
+/*
+  Insere um tiro em cima do canhao
+  Retorna 0 se o tiro nao pode ser inserido. Caso contrario, retorna 1
+*/
 int atira(t_jogo *jogo);
 
+/*
+  Atualiza posicao do tiro ou o remove se ele chegou ao final da tela
+*/
 void atualiza_tiro(int tipo, int lin, int col, int vel, int estado, t_jogo *jogo);
 
+/*
+  Atualiza posicao da bomba ou a remove se ela chegou ao final da tela
+*/
 void atualiza_bomba(int tipo, int lin, int col, int vel, int estado, t_jogo *jogo);
 
+/*
+  Atualiza posicao de tiros e bombas
+*/
 void atualiza_projeteis(t_jogo *jogo);
 
+/*
+  Testa se a barreira 
+*/
 int morreu_barreira(int tipo_b, int lin_b, int col_b, t_jogo *jogo);
 
 void atualiza_barreiras(t_jogo *jogo);
