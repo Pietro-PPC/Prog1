@@ -33,6 +33,9 @@
     3 - morto (apenas para nave_mae)
 */
 
+#ifndef __LIB_LISTA__
+#define __LIB_LISTA__
+
 struct t_nodo {
     int tipo;
     int coord[2];
@@ -137,3 +140,5 @@ int modifica_item_atual(int tipo, int lin, int col, int vel, int estado, t_lista
   Retorna 1 se houve sucesso e zero caso contrário.
 */
 int remove_item_atual(t_lista *l);
+
+#endif

@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include "lib_invaders.h"
 
 /* Funcoes de inicializacao da lista de elementos */

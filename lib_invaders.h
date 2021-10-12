@@ -1,3 +1,6 @@
+#ifndef __LIB_INVADERS__
+#define __LIB_INVADERS__
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -338,3 +341,5 @@ int morreu_nave_mae(int tipo_n, int lin_n, int col_n, t_jogo *jogo);
   Atualiza o local da nave mae e seu estado.
 */
 void atualiza_nave_mae(t_jogo *jogo);
+
+#endif
