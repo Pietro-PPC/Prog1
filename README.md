@@ -25,5 +25,5 @@ $ ./run_si.sh
 - `spacebar`: shoot at the aliens
 - `q`: quit game
 
-## Information: 
+## Information
 This game was developed for the subject of programming, from the second semester of the computer science course of the Federal University of Paraná.
