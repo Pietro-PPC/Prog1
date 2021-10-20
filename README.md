@@ -2,15 +2,16 @@
 
 This is the space invaders game. It was developed using C and linked lists.
 
-## Compiling and running
+## Dependencies
 
 Before compiling the game, you will need to install the `ncurses` library:
-
 ```bash 
 $ sudo apt install libncurses5-dev libncursesw5-dev
 ```
-Then, compile the game using `make`
 
+## Compiling and running
+
+Compile the game using `make`
 ```bash
 $ make
 ```
